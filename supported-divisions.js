@@ -1,3 +1,3 @@
 "use strict";
 
-exports.supportedDivisions = ["RT", "CT"];
+exports.supportedDivisions = ["RT", "CT", "MKPS"];

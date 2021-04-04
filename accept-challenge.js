@@ -175,18 +175,20 @@ exports.acceptChallenge = async (message, parameters) => {
             .map(
                 (player, index) => "<@!"
                     + player.id
-                    + "> ("
-                    + format.players[index].kind
-                    + ")",
+                    + ">"
+                    + (Array.isArray(format.players)
+                        ? (" (" + format.players[index].kind + ")")
+                        : ""),
             )
             .join(" ");
         const defendingMentions = defendingTeam.players
             .map(
                 (player, index) => "<@!"
                     + player.id
-                    + "> ("
-                    + format.players[index].kind
-                    + ")",
+                    + "> "
+                    + (Array.isArray(format.players)
+                        ? ("(" + format.players[index].kind + ")")
+                        : ""),
             )
             .join(" ");
         const explanationMessage = await textChannel.send(

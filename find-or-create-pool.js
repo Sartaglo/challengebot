@@ -1,11 +1,13 @@
 "use strict";
 
 const { findPool } = require("./find-pool");
+const { getFormatTeamSize } = require("./get-format-team-size");
 
 exports.findOrCreatePool = (format, pools) => {
+    const formatTeamSize = getFormatTeamSize(format);
     const poolExists = pools.some(
         (pool) => pool.division.toUpperCase() === format.division.toUpperCase()
-            && pool.teamSize === format.players.length,
+            && pool.teamSize === formatTeamSize,
     );
 
     if (!poolExists) {
@@ -15,10 +17,10 @@ exports.findOrCreatePool = (format, pools) => {
                 division: format.division.toUpperCase(),
                 messageId: null,
                 teams: [],
-                teamSize: format.players.length,
+                teamSize: formatTeamSize,
             },
         );
     }
 
-    return findPool(pools, format.division, format.players.length);
+    return findPool(pools, format.division, formatTeamSize);
 };

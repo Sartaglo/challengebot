@@ -88,7 +88,9 @@ exports.sendTeamStatus = async (message, parameters) => {
                 (player, index) => (team.confirmed[index] ? "✓" : "")
                     + " "
                     + player.name
-                    + " (" + format.players[index].kind + ")",
+                    + (Array.isArray(format.players)
+                        ? (" (" + format.players[index].kind + ")")
+                        : ""),
             )
             .join("\n")
     );

@@ -1,3 +1,5 @@
 "use strict";
 
-exports.normalize = (string) => string.toUpperCase().replace(/\s/g, "").trim();
+exports.normalize = (string) => typeof string === "string"
+    ? string.toUpperCase().replace(/\s/g, "").trim()
+    : null;

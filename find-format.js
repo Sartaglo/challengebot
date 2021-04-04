@@ -1,6 +1,7 @@
 "use strict";
 
 const { TextChannel } = require("discord.js");
+const { getFormatTeamSize } = require("./get-format-team-size");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
 
@@ -8,9 +9,10 @@ exports.findFormat = async (formats, channel, division, teamSize) => {
     const chosenFormat = formats.find(
         (format) => typeof format === "object"
             && format !== null
-            && Array.isArray(format.players)
             && format.division.toUpperCase() === division.toUpperCase()
-            && format.players.length === teamSize,
+            && ((Array.isArray(format.players)
+                && getFormatTeamSize(format) === teamSize)
+                || format.teamSize === teamSize),
     );
 
     if (typeof chosenFormat !== "object" || chosenFormat === null) {

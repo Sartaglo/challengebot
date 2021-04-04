@@ -1,15 +1,17 @@
 "use strict";
 
 const { GuildMember } = require("discord.js");
-const { invalidRoleNames } = require("./invalid-role-names");
 const { findFormat } = require("./find-format");
 const { findOrCreatePool } = require("./find-or-create-pool");
+const { invalidRoleNames } = require("./invalid-role-names");
 const { listItems } = require("./list-items");
+const { loadFormatSpreadsheet } = require("./load-format-spreadsheet");
 const { normalize } = require("./normalize");
 const { tryGetSheet } = require("./try-get-sheet");
 const { writeConfiguration } = require("./write-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
+const { getFormatTeamSize } = require("./get-format-team-size");
 
 exports.startTeam = async (
     oAuth2Client,
@@ -48,13 +50,15 @@ exports.startTeam = async (
         return;
     }
 
-    if (teammateUserIds.length !== format.players.length - 1) {
+    const formatTeamSize = getFormatTeamSize(format);
+
+    if (teammateUserIds.length !== formatTeamSize - 1) {
         await sendTemporaryMessage(
             message.channel,
             "You must tag "
-            + (format.players.length - 1)
+            + (formatTeamSize - 1)
             + " teammate"
-            + (format.players.length - 1 === 1 ? "" : "s")
+            + (formatTeamSize - 1 === 1 ? "" : "s")
             + " for that format.",
         );
 
@@ -76,7 +80,7 @@ exports.startTeam = async (
             ),
     ];
 
-    if (members.length != format.players.length) {
+    if (members.length != formatTeamSize) {
         const indices = teammateUserIds
             .map(
                 (userId, index) =>
@@ -164,104 +168,14 @@ exports.startTeam = async (
         return;
     }
 
-    const invalidMembers = [];
-    const players = [];
-    const spreadsheet = await tryGetSheet(
+    const { invalidMembers, players, teamName } = await loadFormatSpreadsheet(
         oAuth2Client,
-        format.id,
-        format.players
-            .reduce(
-                (ranges, player) => [
-                    ...ranges,
-                    "'" + player.tab + "'!" + player.nameRange,
-                    "'" + player.tab + "'!" + player.mmrRange,
-                ],
-                [],
-            )
-            .filter((range, index, self) => self.indexOf(range) === index),
+        message,
+        format,
+        members,
     );
 
-    for (let index = 0; index < members.length; index += 1) {
-        const member = members[index];
-        const playerFormat = format.players[index];
-
-        if (typeof spreadsheet !== "object" || spreadsheet === null) {
-            invalidMembers.push(member);
-
-            continue;
-        }
-
-        const sheet = spreadsheet.sheets.find(
-            (sheet) => sheet.properties.title === playerFormat.tab,
-        );
-
-        if (typeof sheet !== "object"
-            || sheet === null
-            || !Array.isArray(sheet.data)
-            || typeof sheet.data[0] !== "object"
-            || sheet.data[0] === null
-            || typeof sheet.data[1] !== "object"
-            || sheet.data[1] === null
-            || !Array.isArray(sheet.data[0].rowData)
-            || !Array.isArray(sheet.data[1].rowData)) {
-            invalidMembers.push(member);
-
-            continue;
-        }
-
-        const rowIndex = sheet.data[0].rowData.findIndex(
-            (nameCell) => typeof nameCell === "object"
-                && nameCell !== null
-                && Array.isArray(nameCell.values)
-                && typeof nameCell.values[0] === "object"
-                && nameCell.values[0] !== null
-                && typeof nameCell.values[0].formattedValue === "string"
-                && normalize(nameCell.values[0].formattedValue)
-                === normalize(member.displayName),
-        );
-
-        if (rowIndex === -1) {
-            invalidMembers.push(member);
-
-            continue;
-        }
-
-        const mmrCell = sheet.data[1].rowData[rowIndex];
-
-        if (typeof mmrCell !== "object"
-            || mmrCell === null
-            || !Array.isArray(mmrCell.values)
-            || typeof mmrCell.values[0] !== "object"
-            || mmrCell.values[0] === null) {
-            invalidMembers.push(member);
-
-            continue;
-        }
-
-        const mmr = Number.parseInt(mmrCell.values[0].formattedValue, 10);
-
-        if (!Number.isInteger(mmr)) {
-            invalidMembers.push(member);
-
-            continue;
-        }
-
-        players.push({ id: member.id, name: member.displayName, mmr });
-    }
-
-    if (invalidMembers.length > 0) {
-        await sendTemporaryMessage(
-            message.channel,
-            invalidMembers.map(
-                (member) => member.displayName
-                    + " is not listed on the "
-                    + format.players[members.indexOf(member)].tab
-                    + " tab of <https://docs.google.com/spreadsheets/d/"
-                    + format.id
-                    + ">.",
-            ).join("\n"),
-        );
-
+    if (invalidMembers.length > 0 || players.length === 0) {
         return;
     }
 
@@ -269,7 +183,9 @@ exports.startTeam = async (
         confirmed: Array(players.length).fill(false),
         id: null,
         players,
+        teamName,
     };
+
     team.confirmed[0] = true;
     poolForTeam.teams.push(team);
     writeConfiguration(message.guild.id, configuration);
