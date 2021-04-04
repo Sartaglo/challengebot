@@ -13,6 +13,7 @@ const { challengeTeam } = require("./challenge-team");
 const { declineChallenge } = require("./decline-challenge");
 const { dropTeam } = require("./drop-team");
 const { endMatch } = require("./end-match");
+const { removeTeam } = require("./remove-team");
 const { sendTeamStatus } = require("./send-team-status");
 const { startOrConfirmTeam } = require("./start-or-confirm-team");
 const { stop } = require("./stop");
@@ -77,6 +78,9 @@ exports.actOnMessage = async (message, logOut) => {
         await dropTeam(message, parameters);
     } else if (commandWithoutPrefix === "end") {
         await endMatch(admin, message);
+    } else if (commandWithoutPrefix === "r"
+        || commandWithoutPrefix === "remove") {
+        await removeTeam(message, parameters);
     } else if (commandWithoutPrefix === "stop") {
         await stop(admin, message, logOut);
     } else if (commandWithoutPrefix === "t"
