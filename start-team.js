@@ -7,7 +7,6 @@ const { invalidRoleNames } = require("./invalid-role-names");
 const { listItems } = require("./list-items");
 const { loadFormatSpreadsheet } = require("./load-format-spreadsheet");
 const { normalize } = require("./normalize");
-const { tryGetSheet } = require("./try-get-sheet");
 const { writeConfiguration } = require("./write-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
