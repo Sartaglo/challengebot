@@ -30,16 +30,21 @@ exports.loadFormatSpreadsheet = async (
                 .filter((range, index, self) => self.indexOf(range) === index),
         );
 
+        if (typeof leaderboardSpreadsheet !== "object"
+            || leaderboardSpreadsheet === null) {
+            await sendTemporaryMessage(
+                message.channel,
+                "Error accessing <https://docs.google.com/spreadsheets/d/"
+                + format.id
+                + ">.",
+            );
+
+            return { invalidMembers: members, players };
+        }
+
         for (let index = 0; index < members.length; index += 1) {
             const member = members[index];
             const playerFormat = format.players[index];
-
-            if (typeof leaderboardSpreadsheet !== "object"
-                || leaderboardSpreadsheet === null) {
-                invalidMembers.push(member);
-
-                continue;
-            }
 
             const sheet = leaderboardSpreadsheet.sheets.find(
                 (sheet) => sheet.properties.title === playerFormat.tab,
