@@ -87,7 +87,9 @@ exports.confirmTeam = async (message, configuration, division, teamSize) => {
         pool.changed = true;
         await sendTemporaryMessage(
             message.channel,
-            "Your team is now confirmed for "
+            "Your team **["
+            + team.id
+            + "]** is now confirmed for "
             + stringifyFormat(pool.division, pool.teamSize)
             + ". You may now challenge other teams in the pool."
         );
