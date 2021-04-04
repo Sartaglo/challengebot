@@ -55,7 +55,6 @@ exports.actOnMessage = async (message, logOut) => {
             admin,
             oAuth2Client,
             message,
-            authorIsAdmin,
         );
     } else if (commandWithoutPrefix === "authenticate") {
         await authenticateSpreadsheetAccess(
