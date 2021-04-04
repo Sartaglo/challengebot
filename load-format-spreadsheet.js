@@ -198,7 +198,7 @@ exports.loadFormatSpreadsheet = async (
             listItems(outOfRosterMembers.map((member) => member.displayName))
             + " "
             + (outOfRosterMembers.length === 1 ? "is" : "are")
-            +" not on the same MKPS team as "
+            + " not on the same MKPS team as "
             + message.member.displayName
             + ".",
         );
