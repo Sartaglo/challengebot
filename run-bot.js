@@ -2,6 +2,7 @@
 
 const { Client } = require("discord.js");
 const { actOnMessage } = require("./act-on-message");
+const { checkInactivity } = require("./check-inactivity");
 const { timeouts } = require("./timeouts");
 const { updatePools } = require("./update-pools");
 
@@ -88,6 +89,18 @@ exports.runBot = async () => {
 
                 try {
                     await updatePools(client);
+                } catch (error) {
+                    console.error(error);
+                }
+
+                if (shouldLogOut) {
+                    logOut();
+
+                    return;
+                }
+
+                try {
+                    await checkInactivity(client);
                 } catch (error) {
                     console.error(error);
                 }

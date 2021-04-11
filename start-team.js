@@ -179,13 +179,15 @@ exports.startTeam = async (
     }
 
     const team = {
-        confirmed: Array(players.length).fill(false),
+        confirmed: Array(players.length)
+            .fill(false)
+            .map((_, index) => index === 0),
         id: null,
         players,
         teamName,
+        lastMessageTime: new Date().toJSON(),
+        warned: false,
     };
-
-    team.confirmed[0] = true;
     poolForTeam.teams.push(team);
     writeConfiguration(message.guild.id, configuration);
     await sendTemporaryMessage(

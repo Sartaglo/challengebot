@@ -2,7 +2,7 @@
 
 const { timeouts } = require("./timeouts");
 
-exports.sendTemporaryMessage = async (channel, content) => {
+exports.sendTemporaryMessage = async (channel, content, lifetime = 60_000) => {
     const message = await channel.send(content);
     timeouts.push(
         setTimeout(
@@ -13,7 +13,7 @@ exports.sendTemporaryMessage = async (channel, content) => {
                     console.error(error);
                 }
             },
-            60_000,
+            lifetime,
         ),
     );
 };

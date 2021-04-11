@@ -17,6 +17,7 @@ const { removeTeam } = require("./remove-team");
 const { sendTeamStatus } = require("./send-team-status");
 const { startOrConfirmTeam } = require("./start-or-confirm-team");
 const { stop } = require("./stop");
+const { updateLastMessageTime } = require("./update-last-message-time");
 
 let admin = null;
 
@@ -44,6 +45,7 @@ exports.actOnMessage = async (message, logOut) => {
         );
     }
 
+    updateLastMessageTime(message);
     const segments = message.content.replace(/ +/g, " ").split(" ");
     const prefix = "!";
     const [command, ...parameters] = segments;
