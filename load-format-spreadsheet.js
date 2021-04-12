@@ -122,22 +122,31 @@ exports.loadFormatSpreadsheet = async (
         }
 
         if (invalidMembers.length > 0) {
-            const tabs = Array.isArray(members)
-                ? [format.players[actualMembers.indexOf(member)].tab]
-                : format.players
-                    .map((playerFormat) => playerFormat.tab)
-                    .filter((tab, index, self) => self.indexOf(tab) === index);
             await sendTemporaryMessage(
                 message.channel,
                 invalidMembers.map(
-                    (member) => member.displayName
-                        + " is not listed on the "
-                        + listItems(tabs, "or")
-                        + " tab"
-                        + (tabs.length === 1 ? "" : "s")
-                        + " of <https://docs.google.com/spreadsheets/d/"
-                        + format.id
-                        + ">.",
+                    (member) => {
+                        const tabs = Array.isArray(members)
+                            ? [
+                                format.players[actualMembers.indexOf(member)]
+                                    .tab,
+                            ]
+                            : format.players
+                                .map((playerFormat) => playerFormat.tab)
+                                .filter(
+                                    (tab, index, self) => self.indexOf(tab)
+                                        === index,
+                                );
+
+                        return member.displayName
+                            + " is not listed on the "
+                            + listItems(tabs, "or")
+                            + " tab"
+                            + (tabs.length === 1 ? "" : "s")
+                            + " of <https://docs.google.com/spreadsheets/d/"
+                            + format.id
+                            + ">.";
+                    },
                 ).join("\n"),
             );
         }
