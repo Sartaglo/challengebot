@@ -189,6 +189,39 @@ exports.acceptChallenge = async (message, parameters) => {
         pool.teams.splice(pool.teams.indexOf(challengingTeam), 1);
         pool.teams.splice(pool.teams.indexOf(defendingTeam), 1);
         pool.changed = true;
+        configuration.pools
+            .forEach(
+                (otherPool) => {
+                    if (otherPool !== pool) {
+                        otherPool.teams = otherPool.teams.filter(
+                            (team) => team.players.every(
+                                (player) => challengingTeam.players
+                                    .concat(defendingTeam.players)
+                                    .every(
+                                        (matchPlayer) =>
+                                            normalize(matchPlayer.name)
+                                            !== normalize(player.name),
+                                    ),
+                            ),
+                        );
+                    }
+
+                    otherPool.challenges = otherPool.challenges.filter(
+                        (otherChallenge) =>
+                            otherChallenge === challenge
+                            || (otherPool.teams.some(
+                                (team) => team.id
+                                    === otherChallenge.challengingTeamId,
+                            )
+                                && otherPool.teams.some(
+                                    (team) => team.id
+                                        === otherChallenge.defendingTeamId,
+                                )),
+                    );
+                    otherPool.changed = true;
+                },
+            );
+
         writeConfiguration(message.guild.id, configuration);
         const hostingTeam = Math.floor(Math.random() * 2) + 1 === 1
             ? challengingTeam.id
