@@ -106,12 +106,6 @@ exports.acceptChallenge = async (message, parameters) => {
     const categoryPermissions = Array.from(
         message.channel.parent.permissionOverwrites.values(),
     );
-    const challengerPermissions = challengingTeam.players.map(
-        (player) => ({ allow: ["VIEW_CHANNEL"], id: player.id, type: "member" })
-    );
-    const challengeePermissions = defendingTeam.players.map(
-        (player) => ({ allow: ["VIEW_CHANNEL"], id: player.id, type: "member" })
-    );
 
     try {
         const textChannel = await message.guild.channels.create(
@@ -123,8 +117,19 @@ exports.acceptChallenge = async (message, parameters) => {
                 parent: message.channel.parent,
                 permissionOverwrites: [
                     ...categoryPermissions,
-                    ...challengerPermissions,
-                    ...challengeePermissions,
+                    ...challengingTeam.players.map(
+                        (player) => ({
+                            allow: ["VIEW_CHANNEL"],
+                            id: player.id, type: "member",
+                        })
+                    ),
+                    ...defendingTeam.players.map(
+                        (player) => ({
+                            allow: ["VIEW_CHANNEL"],
+                            id: player.id,
+                            type: "member",
+                        })
+                    ),
                     {
                         allow: ["MANAGE_MESSAGES", "VIEW_CHANNEL"],
                         id: message.guild.me.id,
@@ -140,7 +145,13 @@ exports.acceptChallenge = async (message, parameters) => {
                 parent: message.channel.parent,
                 permissionOverwrites: [
                     ...categoryPermissions,
-                    ...challengerPermissions,
+                    ...challengingTeam.players.map(
+                        (player) => ({
+                            allow: ["VIEW_CHANNEL", "CONNECT"],
+                            id: player.id,
+                            type: "member",
+                        })
+                    ),
                 ],
                 type: "voice",
             },
@@ -151,7 +162,13 @@ exports.acceptChallenge = async (message, parameters) => {
                 parent: message.channel.parent,
                 permissionOverwrites: [
                     ...categoryPermissions,
-                    ...challengeePermissions,
+                    ...defendingTeam.players.map(
+                        (player) => ({
+                            allow: ["VIEW_CHANNEL", "CONNECT"],
+                            id: player.id,
+                            type: "member",
+                        })
+                    ),
                 ],
                 type: "voice",
             },

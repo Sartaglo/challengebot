@@ -122,7 +122,7 @@ exports.confirmSub = async (message, configuration, teamId) => {
                     { VIEW_CHANNEL: true }),
                 voiceChannel.updateOverwrite(
                     message.author,
-                    { VIEW_CHANNEL: true }),
+                    { VIEW_CHANNEL: true, CONNECT: true }),
             ],
         );
         writeConfiguration(message.guild.id, configuration);
