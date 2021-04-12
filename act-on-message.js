@@ -14,6 +14,7 @@ const { declineChallenge } = require("./decline-challenge");
 const { dropTeam } = require("./drop-team");
 const { endMatch } = require("./end-match");
 const { removeTeam } = require("./remove-team");
+const { requestOrConfirmSub } = require("./request-or-confirm-sub");
 const { sendTeamStatus } = require("./send-team-status");
 const { startOrConfirmTeam } = require("./start-or-confirm-team");
 const { stop } = require("./stop");
@@ -85,6 +86,8 @@ exports.actOnMessage = async (message, logOut) => {
         await removeTeam(message, parameters);
     } else if (commandWithoutPrefix === "stop") {
         await stop(admin, message, logOut);
+    } else if (commandWithoutPrefix === "sub") {
+        await requestOrConfirmSub(oAuth2Client, message, parameters);
     } else if (commandWithoutPrefix === "team") {
         await sendTeamStatus(message, parameters);
     }

@@ -149,12 +149,14 @@ exports.startTeam = async (
         (pool) => pool.challenges.some(
             (challenge) => typeof challenge.match === "object"
                 && challenge.match !== null
-                && challenge.match.playerNames.some(
-                    (playerName) => members.some(
-                        (member) => normalize(member.displayName)
-                            === normalize(playerName),
+                && challenge.match.challengingPlayerNames
+                    .concat(challenge.match.defendingPlayerNames)
+                    .some(
+                        (playerName) => members.some(
+                            (member) => normalize(member.displayName)
+                                === normalize(playerName),
+                        ),
                     ),
-                ),
         ),
     );
 

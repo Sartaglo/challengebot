@@ -126,7 +126,11 @@ exports.acceptChallenge = async (message, parameters) => {
                     ...challengerPermissions,
                     ...challengeePermissions,
                     {
-                        allow: ["MANAGE_MESSAGES", "VIEW_CHANNEL"],
+                        allow: [
+                            "MANAGE_PERMISSIONS",
+                            "MANAGE_MESSAGES",
+                            "VIEW_CHANNEL",
+                        ],
                         id: message.guild.me.id,
                         type: "member",
                     }
@@ -157,12 +161,17 @@ exports.acceptChallenge = async (message, parameters) => {
             },
         );
         challenge.match = {
-            playerNames: challengingTeam.players
-                .concat(defendingTeam.players)
-                .map((player) => player.name),
-            textChannelId: textChannel.id,
             challengingVoiceChannelId: challengingVoiceChannel.id,
             defendingVoiceChannelId: defendingVoiceChannel.id,
+            challengingPlayerNames: challengingTeam.players.map(
+                (player) => player.name,
+            ),
+            defendingPlayerNames: defendingTeam.players.map(
+                (player) => player.name,
+            ),
+            challengingSubs: [],
+            defendingSubs: [],
+            textChannelId: textChannel.id,
         };
         pool.teams.splice(pool.teams.indexOf(challengingTeam), 1);
         pool.teams.splice(pool.teams.indexOf(defendingTeam), 1);

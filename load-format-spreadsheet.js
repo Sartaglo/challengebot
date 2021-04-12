@@ -11,6 +11,7 @@ exports.loadFormatSpreadsheet = async (
     format,
     members,
 ) => {
+    const actualMembers = Array.isArray(members) ? members : [members];
     const invalidMembers = [];
     const players = [];
 
@@ -39,79 +40,102 @@ exports.loadFormatSpreadsheet = async (
                 + ">.",
             );
 
-            return { invalidMembers: members, players };
+            return { invalidMembers: actualMembers, players };
         }
 
-        for (let index = 0; index < members.length; index += 1) {
-            const member = members[index];
-            const playerFormat = format.players[index];
+        for (let index = 0; index < actualMembers.length; index += 1) {
+            const member = actualMembers[index];
+            const playerFormats = Array.isArray(members)
+                ? [format.players[index]]
+                : format.players;
 
-            const sheet = leaderboardSpreadsheet.sheets.find(
-                (sheet) => sheet.properties.title === playerFormat.tab,
+            const sheets = leaderboardSpreadsheet.sheets.filter(
+                (sheet) => playerFormats.some(
+                    (playerFormat) => playerFormat.tab
+                        === sheet.properties.title,
+                ),
+            );
+            let added = false;
+            sheets.forEach(
+                (sheet) => {
+                    if (added) {
+                        return;
+                    }
+
+                    if (typeof sheet !== "object"
+                        || sheet === null
+                        || !Array.isArray(sheet.data)
+                        || typeof sheet.data[0] !== "object"
+                        || sheet.data[0] === null
+                        || typeof sheet.data[1] !== "object"
+                        || sheet.data[1] === null
+                        || !Array.isArray(sheet.data[0].rowData)
+                        || !Array.isArray(sheet.data[1].rowData)) {
+                        return;
+                    }
+
+                    const rowIndex = sheet.data[0].rowData.findIndex(
+                        (nameCell) => typeof nameCell === "object"
+                            && nameCell !== null
+                            && Array.isArray(nameCell.values)
+                            && typeof nameCell.values[0] === "object"
+                            && nameCell.values[0] !== null
+                            && typeof nameCell.values[0].formattedValue
+                            === "string"
+                            && normalize(nameCell.values[0].formattedValue)
+                            === normalize(member.displayName),
+                    );
+
+                    if (rowIndex === -1) {
+                        return;
+                    }
+
+                    const mmrCell = sheet.data[1].rowData[rowIndex];
+
+                    if (typeof mmrCell !== "object"
+                        || mmrCell === null
+                        || !Array.isArray(mmrCell.values)
+                        || typeof mmrCell.values[0] !== "object"
+                        || mmrCell.values[0] === null) {
+                        return;
+                    }
+
+                    const mmr = Number.parseInt(
+                        mmrCell.values[0].formattedValue,
+                        10,
+                    );
+
+                    if (!Number.isInteger(mmr)) {
+                        return;
+                    }
+
+                    players.push(
+                        { id: member.id, name: member.displayName, mmr },
+                    );
+                    added = true;
+                },
             );
 
-            if (typeof sheet !== "object"
-                || sheet === null
-                || !Array.isArray(sheet.data)
-                || typeof sheet.data[0] !== "object"
-                || sheet.data[0] === null
-                || typeof sheet.data[1] !== "object"
-                || sheet.data[1] === null
-                || !Array.isArray(sheet.data[0].rowData)
-                || !Array.isArray(sheet.data[1].rowData)) {
+            if (!added) {
                 invalidMembers.push(member);
-
-                continue;
             }
-
-            const rowIndex = sheet.data[0].rowData.findIndex(
-                (nameCell) => typeof nameCell === "object"
-                    && nameCell !== null
-                    && Array.isArray(nameCell.values)
-                    && typeof nameCell.values[0] === "object"
-                    && nameCell.values[0] !== null
-                    && typeof nameCell.values[0].formattedValue === "string"
-                    && normalize(nameCell.values[0].formattedValue)
-                    === normalize(member.displayName),
-            );
-
-            if (rowIndex === -1) {
-                invalidMembers.push(member);
-
-                continue;
-            }
-
-            const mmrCell = sheet.data[1].rowData[rowIndex];
-
-            if (typeof mmrCell !== "object"
-                || mmrCell === null
-                || !Array.isArray(mmrCell.values)
-                || typeof mmrCell.values[0] !== "object"
-                || mmrCell.values[0] === null) {
-                invalidMembers.push(member);
-
-                continue;
-            }
-
-            const mmr = Number.parseInt(mmrCell.values[0].formattedValue, 10);
-
-            if (!Number.isInteger(mmr)) {
-                invalidMembers.push(member);
-
-                continue;
-            }
-
-            players.push({ id: member.id, name: member.displayName, mmr });
         }
 
         if (invalidMembers.length > 0) {
+            const tabs = Array.isArray(members)
+                ? [format.players[actualMembers.indexOf(member)].tab]
+                : format.players
+                    .map((playerFormat) => playerFormat.tab)
+                    .filter((tab, index, self) => self.indexOf(tab) === index);
             await sendTemporaryMessage(
                 message.channel,
                 invalidMembers.map(
                     (member) => member.displayName
                         + " is not listed on the "
-                        + format.players[members.indexOf(member)].tab
-                        + " tab of <https://docs.google.com/spreadsheets/d/"
+                        + listItems(tabs, "or")
+                        + " tab"
+                        + (tabs.length === 1 ? "" : "s")
+                        + " of <https://docs.google.com/spreadsheets/d/"
                         + format.id
                         + ">.",
                 ).join("\n"),
@@ -139,7 +163,7 @@ exports.loadFormatSpreadsheet = async (
     );
 
     if (typeof rosterSpreadsheet !== "object" || rosterSpreadsheet === null) {
-        return { invalidMembers: members, players };
+        return { invalidMembers: actualMembers, players };
     }
 
     const sheet = rosterSpreadsheet.sheets.find(
@@ -155,7 +179,7 @@ exports.loadFormatSpreadsheet = async (
         || sheet.data[1] === null
         || !Array.isArray(sheet.data[0].rowData)
         || !Array.isArray(sheet.data[1].rowData)) {
-        return { invalidMembers: members, players };
+        return { invalidMembers: actualMembers, players };
     }
 
     const rowIndex = sheet.data[1].rowData.findIndex(
@@ -171,12 +195,12 @@ exports.loadFormatSpreadsheet = async (
             message.member.displayName + " is not on an MKPS team.",
         );
 
-        return { invalidMembers: members, players };
+        return { invalidMembers: actualMembers, players };
     }
 
     const outOfRosterMembers = [];
 
-    for (const member of members) {
+    for (const member of actualMembers) {
         const notInRoster = sheet.data[1].rowData[rowIndex].values.every(
             (value) => normalize(value.formattedValue)
                 !== normalize(member.displayName),

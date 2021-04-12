@@ -1,6 +1,6 @@
 "use strict";
 
-exports.listItems = (items) => {
+exports.listItems = (items, lastDelimiter = "and") => {
     if (!Array.isArray(items) || items.length === 0) {
         return "";
     }
@@ -10,13 +10,13 @@ exports.listItems = (items) => {
     }
 
     if (items.length === 2) {
-        return items[0] + " and " + items[1];
+        return items[0] + " " + lastDelimiter + " " + items[1];
     }
 
     return items
         .map(
             (item, index, self) => index === self.length - 1
-                ? ("and " + item)
+                ? (lastDelimiter + " " + item)
                 : item,
         )
         .join(", ");
