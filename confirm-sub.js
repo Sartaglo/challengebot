@@ -102,6 +102,16 @@ exports.confirmSub = async (message, configuration, teamId) => {
         );
     }
 
+    if (!message.guild.me.hasPermission("ADMINISTRATOR")) {
+        await sendTemporaryMessage(
+            message.channel,
+            "I cannot update the channels for the match because I do not have"
+            + " the Administrator permission.",
+        );
+
+        return;
+    }
+
     try {
         const [textChannel, voiceChannel] = await Promise.all(
             [

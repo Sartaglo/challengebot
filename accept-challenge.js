@@ -93,11 +93,11 @@ exports.acceptChallenge = async (message, parameters) => {
         return;
     }
 
-    if (!message.guild.me.hasPermission("MANAGE_CHANNELS")) {
+    if (!message.guild.me.hasPermission("ADMINISTRATOR")) {
         await sendTemporaryMessage(
             message.channel,
             "I cannot create the channels for the match because I do not have"
-            + " the Manage Channels permission.",
+            + " the Administrator permission.",
         );
 
         return;
@@ -130,11 +130,6 @@ exports.acceptChallenge = async (message, parameters) => {
                             type: "member",
                         })
                     ),
-                    {
-                        allow: ["MANAGE_MESSAGES", "VIEW_CHANNEL"],
-                        id: message.guild.me.id,
-                        type: "member",
-                    }
                 ],
                 type: "text",
             },
