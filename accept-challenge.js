@@ -126,11 +126,7 @@ exports.acceptChallenge = async (message, parameters) => {
                     ...challengerPermissions,
                     ...challengeePermissions,
                     {
-                        allow: [
-                            "MANAGE_PERMISSIONS",
-                            "MANAGE_MESSAGES",
-                            "VIEW_CHANNEL",
-                        ],
+                        allow: ["MANAGE_MESSAGES", "VIEW_CHANNEL"],
                         id: message.guild.me.id,
                         type: "member",
                     }
