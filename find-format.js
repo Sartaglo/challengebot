@@ -10,9 +10,8 @@ exports.findFormat = async (formats, channel, division, teamSize) => {
         (format) => typeof format === "object"
             && format !== null
             && format.division.toUpperCase() === division.toUpperCase()
-            && ((Array.isArray(format.players)
-                && getFormatTeamSize(format) === teamSize)
-                || format.teamSize === teamSize),
+            && (Array.isArray(format.players)
+                || getFormatTeamSize(format) === teamSize),
     );
 
     if (typeof chosenFormat !== "object" || chosenFormat === null) {
