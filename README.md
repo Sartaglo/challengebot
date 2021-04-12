@@ -100,7 +100,8 @@ and voice channel.
 >[2:29 PM] ChallengeBot: Sartaglo has asked ELP to sub for team **[26]** in
 their RT 5v5 match against team **[25]**.  
 >[2:30 PM] ELP: !sub 26  
->[2:30 PM] ChallengeBot: ELP has agreed to sub in for team **[26]**.  
+>[2:30 PM] ChallengeBot: ELP has agreed to sub in for team **[26]** in their RT
+5v5 match against team **[25]**. 
 
 ## Ending a match
 After a match completes and a table is posted, a staff member may delete the
