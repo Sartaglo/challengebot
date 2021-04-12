@@ -85,8 +85,7 @@ exports.actOnMessage = async (message, logOut) => {
         await removeTeam(message, parameters);
     } else if (commandWithoutPrefix === "stop") {
         await stop(admin, message, logOut);
-    } else if (commandWithoutPrefix === "t"
-        || commandWithoutPrefix === "team") {
+    } else if (commandWithoutPrefix === "team") {
         await sendTeamStatus(message, parameters);
     }
 };
