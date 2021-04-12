@@ -203,9 +203,9 @@ exports.acceptChallenge = async (message, parameters) => {
                 ["**[" + defendingTeam.id + "]** " + defendingMentions],
                 [],
                 [
-                    "Team "
+                    "Team **["
                     + hostingTeam
-                    + " has been randomly selected as the hosting team.",
+                    + "]** has been randomly selected as the hosting team.",
                 ],
                 [],
                 ["**__Full alternating spots are required.__**"],
