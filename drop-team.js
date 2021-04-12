@@ -6,6 +6,7 @@ const { normalize } = require("./normalize");
 const { readConfiguration } = require("./read-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
+const { supportedDivisions } = require("./supported-divisions");
 const { writeConfiguration } = require("./write-configuration");
 
 exports.dropTeam = async (message, parameters) => {
