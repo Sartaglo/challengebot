@@ -50,6 +50,11 @@ exports.actOnMessage = async (message, logOut) => {
     const segments = message.content.replace(/ +/g, " ").split(" ");
     const prefix = "!";
     const [command, ...parameters] = segments;
+
+    if (!command.startsWith(prefix)) {
+        return;
+    }
+
     const commandWithoutPrefix = command.substring(prefix.length).toLowerCase();
 
     if (commandWithoutPrefix === "accept") {
