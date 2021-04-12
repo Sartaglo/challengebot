@@ -7,6 +7,7 @@ const { readConfiguration } = require("./read-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
 const { supportedDivisions } = require("./supported-divisions");
+const { updateLastMessageTime } = require("./update-last-message-time");
 
 exports.sendTeamStatus = async (message, parameters) => {
     if (!message.guild) {
@@ -22,6 +23,8 @@ exports.sendTeamStatus = async (message, parameters) => {
         || message.channel.id !== configuration.challengeChannelId) {
         return;
     }
+
+    updateLastMessageTime(message);
 
     if (typeof division !== "string"
         || !supportedDivisions.includes(division.toUpperCase())

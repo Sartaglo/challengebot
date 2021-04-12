@@ -5,6 +5,7 @@ const { normalize } = require("./normalize");
 const { readConfiguration } = require("./read-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
+const { updateLastMessageTime } = require("./update-last-message-time");
 const { writeConfiguration } = require("./write-configuration");
 
 exports.acceptChallenge = async (message, parameters) => {
@@ -20,6 +21,7 @@ exports.acceptChallenge = async (message, parameters) => {
         return;
     }
 
+    updateLastMessageTime(message);
     const challengingTeamId = Number.parseInt(parameters[0], 10);
     const pool = configuration.pools.find(
         (poolToFind) => poolToFind.teams.some(

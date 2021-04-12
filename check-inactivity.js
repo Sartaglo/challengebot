@@ -110,7 +110,7 @@ exports.checkInactivity = async (client) => {
                         + minutesBeforeRemoval
                         + " minute"
                         + (minutesBeforeRemoval === 1 ? "" : "s")
-                        + " unless you send a message in this channel.",
+                        + " unless you send a bot command in this channel.",
                         secondsBeforeRemoval * 1000,
                     );
                     team.warned = true;

@@ -7,6 +7,7 @@ const { readConfiguration } = require("./read-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
 const { supportedDivisions } = require("./supported-divisions");
+const { updateLastMessageTime } = require("./update-last-message-time");
 const { writeConfiguration } = require("./write-configuration");
 
 exports.dropTeam = async (message, parameters) => {
@@ -25,6 +26,8 @@ exports.dropTeam = async (message, parameters) => {
         || !Array.isArray(configuration.pools)) {
         return;
     }
+
+    updateLastMessageTime(message);
 
     if (typeof division === "string"
         && !supportedDivisions.includes(division.toUpperCase())) {

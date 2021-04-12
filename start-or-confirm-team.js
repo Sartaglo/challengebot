@@ -5,6 +5,7 @@ const { readConfiguration } = require("./read-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { startTeam } = require("./start-team");
 const { supportedDivisions } = require("./supported-divisions");
+const { updateLastMessageTime } = require("./update-last-message-time");
 
 exports.startOrConfirmTeam = async (oAuth2Client, message, parameters) => {
     if (!message.guild) {
@@ -21,6 +22,8 @@ exports.startOrConfirmTeam = async (oAuth2Client, message, parameters) => {
         || !Array.isArray(configuration.pools)) {
         return;
     }
+
+    updateLastMessageTime(message);
 
     if (parameters.length <= 1) {
         await sendTemporaryMessage(

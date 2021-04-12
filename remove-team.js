@@ -4,6 +4,7 @@ const { Role } = require("discord.js");
 const { readConfiguration } = require("./read-configuration");
 const { sendTemporaryMessage } = require("./send-temporary-message");
 const { stringifyFormat } = require("./stringify-format");
+const { updateLastMessageTime } = require("./update-last-message-time");
 const { writeConfiguration } = require("./write-configuration");
 
 exports.removeTeam = async (message, parameters) => {
@@ -20,6 +21,7 @@ exports.removeTeam = async (message, parameters) => {
         return;
     }
 
+    updateLastMessageTime(message);
     const highestRoleName = message.member.roles.highest instanceof Role
         ? message.member.roles.highest.name
         : null;

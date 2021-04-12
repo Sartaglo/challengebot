@@ -4,6 +4,7 @@ const { confirmSub } = require("./confirm-sub");
 const { readConfiguration } = require("./read-configuration");
 const { requestSub } = require("./request-sub");
 const { sendTemporaryMessage } = require("./send-temporary-message");
+const { updateLastMessageTime } = require("./update-last-message-time");
 
 exports.requestOrConfirmSub = async (oAuth2Client, message, parameters) => {
     if (!message.guild) {
@@ -18,6 +19,7 @@ exports.requestOrConfirmSub = async (oAuth2Client, message, parameters) => {
         return;
     }
 
+    updateLastMessageTime(message);
     const result = /^<@!?([0-9]+)>$/.exec(parameters[0]);
     const teamId = Number.parseInt(parameters[0], 10);
 
