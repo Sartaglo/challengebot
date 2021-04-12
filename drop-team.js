@@ -48,7 +48,7 @@ exports.dropTeam = async (message, parameters) => {
             message.channel,
             "There are no challenge formats in this server"
             + (typeof division === "string"
-                ? (" for " + division.toLowerCase)
+                ? (" for " + division.toUpperCase())
                 : "")
             + (Number.isInteger(teamSize)
                 ? (" " + teamSize + "v" + teamSize)
